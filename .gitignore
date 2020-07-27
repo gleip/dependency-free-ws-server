@@ -1,0 +1,8 @@
+article.md
+**/.idea
+**/.vscode
+**/node_modules
+**/dist
+**/.nyc_output
+**/coverage
+**/media/**/*.*
