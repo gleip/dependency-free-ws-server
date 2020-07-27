@@ -4,7 +4,8 @@
   "description": "dependency free WebSocket server",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "./node_modules/ts-node/dist/bin.js index.ts",
+    "buildAndStart": "rm -rf ./dist && ./node_modules/.bin/tsc && node ./dist/index.js"
   },
   "keywords": [],
   "author": "",
