@@ -90,7 +90,7 @@ export class SocketServer {
     }
     if (length === this.DATA_LENGTH.VERY_LONG) {
       return {
-        payloadLength: message.slice(2, 10).readBigInt64BE(), // 4
+        length: message.slice(2, 10).readBigInt64BE(), // 4
         mask: message.slice(10, 14),
         data: message.slice(14),
       };
