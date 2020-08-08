@@ -35,10 +35,6 @@ export class SocketServer {
           '\r\n',
         ];
 
-        socket.write(responseHeaders.join('\r\n'));
-
-        setInterval(() => socket.write(this.CONTROL_MESSAGES.PING), heartbeatTimeout);
-
         socket.on('data', (data: Buffer) => {
           if (data[0] === this.OPCODE.SHORT_TEXT_MESSAGE) {
             const meta = this.decryptMessage(data);
@@ -47,6 +43,20 @@ export class SocketServer {
               this.sendShortMessage(message, socket);
             });
           }
+        });
+
+        socket.write(responseHeaders.join('\r\n'));
+
+        const id = setInterval(() => socket.write(this.CONTROL_MESSAGES.PING), heartbeatTimeout);
+        const events = ['end', 'close', 'error'] as const;
+
+        events.forEach((event) => {
+          socket.once(event, () => {
+            console.log(`Socket terminated due to connection ${event}`);
+
+            clearInterval(id);
+            this.connections.delete(socket);
+          })
         });
 
         this.connections.add(socket);
@@ -80,7 +90,7 @@ export class SocketServer {
     }
     if (length === this.DATA_LENGTH.VERY_LONG) {
       return {
-        payloadLength: message.slice(2, 10).readBigInt64BE(), // 4
+        length: message.slice(2, 10).readBigInt64BE(), // 4
         mask: message.slice(10, 14),
         data: message.slice(14),
       };
